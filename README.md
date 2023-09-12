@@ -1,6 +1,5 @@
 # PBP_Inventory | Assignment 2
 
-## The App
 The following link will redirect you to the App: [Click Me!](https://curry-under-armour-inventoryy.adaptable.app/main/)
 
 ## Answers to the Questions
@@ -28,6 +27,8 @@ The 'urls.py' file inside the 'UnderArmour_Curry_Inventory' directory was modifi
 * __Deploying the app to Adaptable so it can be accessed through the internet.:__<br>
 After finalizing the app and testing it to see if it runs locally, I ran the 'add', 'commit', 'push' commands to GitHub online so that the local repository synchronizes with the repository online. Afterwards, I went over to Adaptable.io in order to deploy the app by following the same configurations provided in the tutorial.
 
+## Create a diagram explaining the flow of client requests to a Django web app and its response.
+<img src="/assets/Flowchart_PBP_Assignment2.png">
 
 
 
