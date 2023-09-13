@@ -4,7 +4,7 @@ The following link will redirect you to the App: [Click Me!](https://curry-under
 
 ## Answers to the Questions
 
-### How do you implement the tasks in the checklist?
+## How do you implement the tasks in the checklist?
 
 * __Creating a new Django project:__<br>
 Before starting the new Django project, I firstly created a new git repository locally and online on GitHub. After preparing the repository, I started creating the Django project by creating a new directory named, "PBP_Inventory". The next step was to initialize the virtual environment by running the command, `python -m venv env`, which was followed by activating it using the script, `env\Scripts\activate.bat` in order to isolate the dependencies and the package. Afterwards, the dependencies were installed in the same directory using `pip install -r requirements.txt` in the `requirements.txt` file, which was followed by configuring the project by adding `*` to `ALLOWED_HOSTS` within `settings.py`, and adding a `.gitignore` file with the contents from the tutorial. Finally, the project was created by running the command `django-admin startproject UnderArmour_Curry_Inventory .`
@@ -28,18 +28,15 @@ The `urls.py` file inside the `UnderArmour_Curry_Inventory` directory was modifi
 After finalizing the app and testing it to see if it runs locally, I ran the `add`, `commit`, `push` commands to GitHub online so that the local repository synchronizes with the repository online. Afterwards, I went over to Adaptable.io in order to deploy the app by following the same configurations provided in the tutorial.
 
 
-
-### Create a diagram explaining the flow of client requests to a Django web app and its response.
+## Create a diagram explaining the flow of client requests to a Django web app and its response.
 <img src="/assets/Flowchart_PBP_Assignment2.png">
 
 
-
-### What is the purpose of a virtual environment? Can we create a Django web app without a virtual environment?
+## What is the purpose of a virtual environment? Can we create a Django web app without a virtual environment?
 
 The purpose of a virtual environment is to help keep dependencies and packages required by different projects (such as a Django project) separated/isolataed from one another as well as from the global/base Python environment so that conflicts with other versions on the computer are prevented. For example, we may need a virtual environment in the case that we are working with more than one Django project or when we are using third-party Python packages to build Django apps. 
 
 Note that it is possible to create a Django web app without a virtual environment and install Django globally, however, it is highly recommended that a virtual environment is utilized. This is because installing Django globally could case version conflicts and system-level package dependencies issues (such as updating the wrong Django version for a Django project).
-
 
 
 ### What is MVC, MVT, and MVVM? Explain the differences between the three.
