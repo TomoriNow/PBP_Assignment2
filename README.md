@@ -27,14 +27,20 @@ The `urls.py` file inside the `UnderArmour_Curry_Inventory` directory was modifi
 * __Deploying the app to Adaptable so it can be accessed through the internet.:__<br>
 After finalizing the app and testing it to see if it runs locally, I ran the `add`, `commit`, `push` commands to GitHub online so that the local repository synchronizes with the repository online. Afterwards, I went over to Adaptable.io in order to deploy the app by following the same configurations provided in the tutorial.
 
+
+
 ### Create a diagram explaining the flow of client requests to a Django web app and its response.
 <img src="/assets/Flowchart_PBP_Assignment2.png">
+
+
 
 ### What is the purpose of a virtual environment? Can we create a Django web app without a virtual environment?
 
 The purpose of a virtual environment is to help keep dependencies and packages required by different projects (such as a Django project) separated/isolataed from one another as well as from the global/base Python environment so that conflicts with other versions on the computer are prevented. For example, we may need a virtual environment in the case that we are working with more than one Django project or when we are using third-party Python packages to build Django apps. 
 
 Note that it is possible to create a Django web app without a virtual environment and install Django globally, however, it is highly recommended that a virtual environment is utilized. This is because installing Django globally could case version conflicts and system-level package dependencies issues (such as updating the wrong Django version for a Django project).
+
+
 
 ### What is MVC, MVT, and MVVM? Explain the differences between the three.
 
