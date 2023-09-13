@@ -2,8 +2,6 @@
 
 The following link will redirect you to the App: [Click Me!](https://curry-under-armour-inventoryy.adaptable.app/main/)
 
-## Answers to the Questions
-
 ## How do you implement the tasks in the checklist?
 
 * __Creating a new Django project:__<br>
@@ -39,7 +37,7 @@ The purpose of a virtual environment is to help keep dependencies and packages r
 Note that it is possible to create a Django web app without a virtual environment and install Django globally, however, it is highly recommended that a virtual environment is utilized. This is because installing Django globally could case version conflicts and system-level package dependencies issues (such as updating the wrong Django version for a Django project).
 
 
-### What is MVC, MVT, and MVVM? Explain the differences between the three.
+## What is MVC, MVT, and MVVM? Explain the differences between the three.
 
 MVC, MVT, and MVVM are essentially industry-recognized concept/architechture design patterns to develop applications. 
 
