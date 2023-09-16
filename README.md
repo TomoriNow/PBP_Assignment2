@@ -47,6 +47,73 @@ MVT is known as the Model-View-Template architechtural design pattern, which is 
 
 Lastly, MVVM is known as the Model-View-ViewModel Architechtural Pattern, which suggests separating the data presentation logic from the core business logic aspect of the application; it provides a clear separation between the domain/application logic and the presentation logic. For instance, the Model component is accountable for abstracting sources of data, and then works together with the ViewModel component to retrieve and save that data. The View component informs the ViewModel on any action/input from the user in the application. It essentially observes the ViewModel component for any notifications and then binds the data to the ViewModel; note that it does not contain any application logic. ViewModel is a component that is exclusive to the MVVM pattern, thus making this the primary difference from MVT and MVC. This component abstracts the view layer and acts as a "wrapper" for the application data. In other words, it exposes the streams of relevant data to the View component, and creates a link between the Model and View component.
 
+# PBP_Inventory | Assignment 3
+
+## What is the difference between `POST` form and `GET` form in Django?
+
+The `POST` form in Django is a HTTP method that returns Django's login form that the browser bundles up, encodes it for the purpose of transmission, and then receives its response in return. Conversely, the `GET` form is an HTTP method that bundles up submitted data from the form into a string and then utilizes it to create a URL that contains the address where the data should be sent, as well as data keys and values. 
+
+The difference between the two is that the `POST` method is utilized to submit (internally) the data of form elements to a web server using the HttpPost object without URL parameters, and to also used to change the state of the system or create requests to make changes in the database. On the other hand, the `GET` method is utilized to submit the data of form elements to a webserver using URL parameters, and used for requests that do not affect the state of the system/database.
+
+## What are the main differences between XML, JSON, and HTML in the context of data delivery?
+
+In the context of data delivery, XML (Extensible Markup Language) is a markup language that provides rules in defining any type of data that would be transmitted. In particular, XML uses tags to differentiate between data attributes from the actual data for information exchange. Additionally, XML, stores data in a tree structure that displays information layers, starting with a root and having child elements.
+
+ On the other hand, JSON (JavaScript Object Notation) is another type of data representation or an open data interchange format that is human and machine-readable, making it more simpler and flexible. JSON represents data using an Object (a collection of key-value pairs to create a structure similar to a map) and an Array (an ordered collection of values separated by commas).
+ 
+ Differing further from these two, HTML (HyperText Markup Language) is a language used to create the basic structure of web pages and link them together. HTML documents are usually made up of tags (`< >`) to manage and separate the structure of the web page. In data delivery, HTML is utilized to render web information and not exactly data interchange between end-users, however, more towards in displaying the contents of the web page in a structured and visually attractive manner.
+ 
+ ## Why is JSON often used in data exchange between modern web applications?
+
+JSON is often used in data exchange between modern web applications because of its fast data interchange and web service processing results, human-readable text/code, lightweight characteristic, as well as fewer coding requirements. JSON is text-based, making it very lightweight for developers and provides an easy-to-parse data format which implies less code needed for parsing purposes. Additionally, JSON also provides better schema support for databases, and is highly interoperable/compatible between applications/technologies such as WebSocket, GraphSQL, and RESTful (Representational State Transfer) web services.
+
+## Explain how you implemented the checklist above step-by-step.
+
+* __Create a form input to add a model object to the previous app.__<br>
+In creating the `form` input, I first created a `forms.py` file inside the `main` folder. In the file, a class called `ProductForm` was created with the parameter `ModelForm` that was imported from `django.forms`. An additional class called `Meta` was nested within `ProductForm`, at which I had the `model = Item` that was imported from `main.models` that will be used to point to the `Item` model used by the form. A `fields = ["name", "price", "description"]` list was also created to select the attributes from `Item` as form fields; note that `product_release_date` was not added from `Item` since the date would be added automatically. 
+
+Afterwards, I added a function called `create_product` in the `views.py` file in the `main` directory that accepts the parameter `request` so that it could automatically add a new product/Item (model object) when the form is submitted. The `ProductForm` is created using the `form = ProductForm(request.POST or None)` which is filled with the user's input in `request.POST`. The form is then validated using `form.is_valid()` and then saved with `form.save()` to the app's database. 
+
+If valid, the function returns `HttpResponseRedirect(reverse('main:show_main'))` which redirects the page after the form is saved. Otherwise, the function returns `render(request, "create_product.html", context)` which renders `create_product.html`; a file that uses the `create_product` function to add products and create a form with the `POST` method. In the same file, the `show_main` function is modified to include `products = Item.objects.all()` to fetch all `Item` objects from the app's database.
+
+* __Add 5 views to view the added objects in HTML, XML, JSON, XML by ID, and JSON by ID formats.__<br>
+
+Adding 5 views for the added objects in HTML, XML, JSON, XML by ID, and JSON by ID formats involves updating the `main.html` and `views.py` files. To display this in the app from HTML, I created a table using `<table>` tags and a for-loop to iteratively show the product data (`name`, `price`, `description`, `product_release_date`). A button called `Add New Product` is added using the `<button>` tag and referenced to the `create_product` function in `main` using the `a=href="{% url 'main:create_product' %}"` attritbute.
+
+To add the XML, JSON, XML by ID, and JSON by ID formats as views, the `views.py` file is added with the following functions:
+
+<b> Function showing XML view </b>
+```def show_xml(request):
+    data = Item.objects.all()
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```
+
+<b> Function showing JSON view </b>
+```def show_json(request):
+    data = Item.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")```
+    
+<b> Function showing XML view by ID </b>
+```def show_xml_by_id(request, id):
+    data = Item.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```
+
+<b> Function showing JSON view by ID </b>
+```def show_json_by_id(request, id):
+    data = Item.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")```
+
+For the `show_xml` and `show_json` functions, they both accept `request` parameters stores a variable `data = Item.objects.all()` to store all fetched `Item` objects, and returns the previously fetched data as `XML` and `JSON` formats respectively as an  `HttpResponse`.
+
+For the `show_xml_by_id` and `show_json_by_id` functions, they both accept `request` and `id` parameters. They also use `data = Item.objects.filter(pk=id)` to query the result of data given a specific `id` and returns an `HttpResponse` containing the serialized data in `XML` and `JSON` formats respectively. 
+
+
+
+
+
+
+
+
+
 
 
 
