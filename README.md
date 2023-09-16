@@ -80,35 +80,36 @@ To add the XML, JSON, XML by ID, and JSON by ID formats as views, the `views.py`
 <b> Function showing XML view </b>
 ```py
     def show_xml(request):
-    data = Item.objects.all()
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+        data = Item.objects.all()
+        return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 ```
 
 <b> Function showing JSON view </b>
 ```py
     def show_json(request):
-    data = Item.objects.all()
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+        data = Item.objects.all()
+        return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 ```
     
 <b> Function showing XML view by ID </b>
 ```py
     def show_xml_by_id(request, id):
-    data = Item.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+        data = Item.objects.filter(pk=id)
+        return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 ```
 
 <b> Function showing JSON view by ID </b>
 ```py
     def show_json_by_id(request, id):
-    data = Item.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+        data = Item.objects.filter(pk=id)
+        return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 ```
 
 For the `show_xml` and `show_json` functions, they both accept `request` parameters stores a variable `data = Item.objects.all()` to store all fetched `Item` objects, and returns the previously fetched data as `XML` and `JSON` formats respectively as an  `HttpResponse`.
 
 For the `show_xml_by_id` and `show_json_by_id` functions, they both accept `request` and `id` parameters. They also use `data = Item.objects.filter(pk=id)` to query the result of data given a specific `id` and returns an `HttpResponse` containing the serialized data in `XML` and `JSON` formats respectively. 
 
+* __Create URL routing for each of the views added in point 2.__<br>
 
 
 
