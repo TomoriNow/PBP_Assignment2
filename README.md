@@ -109,8 +109,20 @@ For the `show_xml` and `show_json` functions, they both accept `request` paramet
 
 For the `show_xml_by_id` and `show_json_by_id` functions, they both accept `request` and `id` parameters. They also use `data = Item.objects.filter(pk=id)` to query the result of data given a specific `id` and returns an `HttpResponse` containing the serialized data in `XML` and `JSON` formats respectively. 
 
-* __Create URL routing for each of the views added in point 2.__<br>
 
+* __Create URL routing for each of the views added in point 2.__<br>
+I created the URL routing for each of the views previously by opening the `urls.py` file inside `main` and imported the functions created using `from main.views import show_main, create_product, show_xml, show_json, show_xml_by_id, show_json_by_id`. Afterwards, I added the following URL paths into the `urlpatterns` list so that they can access the imported functions:
+
+```py
+    urlpatterns = [
+        path('', show_main, name='show_main'),
+        path('create-product', create_product, name='create_product'), 
+        path('xml/', show_xml, name='show_xml'), # URL path for XML
+        path('json/', show_json, name='show_json'), # URL path for JSON
+        path('xml/<int:id>/', show_xml_by_id, name='show_xml_by_id'), # URL path for XML by ID
+        path('json/<int:id>/', show_json_by_id, name='show_json_by_id'), # URL path for JSON by ID
+]
+```
 
 
 
