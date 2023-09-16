@@ -73,30 +73,37 @@ JSON is often used in data exchange between modern web applications because of i
 In creating the `form` input, I first created a `forms.py` file inside the `main` folder. In the file, a class called `ProductForm` was created with the parameter `ModelForm` that was imported from `django.forms`. An additional class called `Meta` was nested within `ProductForm`, at which I had the `model = Item` that was imported from `main.models` that will be used to point to the `Item` model used by the form. A `fields = ["name", "price", "description"]` list was also created to select the attributes from `Item` as form fields; note that `product_release_date` was not added from `Item` since the date would be added automatically. Afterwards, I added a function called `create_product` in the `views.py` file in the `main` directory that accepts the parameter `request` so that it could automatically add a new product/Item (model object) when the form is submitted. The `ProductForm` is created using the `form = ProductForm(request.POST or None)` which is filled with the user's input in `request.POST`. The form is then validated using `form.is_valid()` and then saved with `form.save()` to the app's database. If valid, the function returns `HttpResponseRedirect(reverse('main:show_main'))` which redirects the page after the form is saved. Otherwise, the function returns `render(request, "create_product.html", context)` which renders `create_product.html`; a file that uses the `create_product` function to add products and create a form with the `POST` method. In the same file, the `show_main` function is modified to include `products = Item.objects.all()` to fetch all `Item` objects from the app's database.
 
 * __Add 5 views to view the added objects in HTML, XML, JSON, XML by ID, and JSON by ID formats.__<br>
-
 Adding 5 views for the added objects in HTML, XML, JSON, XML by ID, and JSON by ID formats involves updating the `main.html` and `views.py` files. To display this in the app from HTML, I created a table using `<table>` tags and a for-loop to iteratively show the product data (`name`, `price`, `description`, `product_release_date`). A button called `Add New Product` is added using the `<button>` tag and referenced to the `create_product` function in `main` using the `a=href="{% url 'main:create_product' %}"` attritbute.
 
 To add the XML, JSON, XML by ID, and JSON by ID formats as views, the `views.py` file is added with the following functions:
 
 <b> Function showing XML view </b>
-```def show_xml(request):
+```py
+    def show_xml(request):
     data = Item.objects.all()
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+```
 
 <b> Function showing JSON view </b>
-```def show_json(request):
+```py
+    def show_json(request):
     data = Item.objects.all()
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")```
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+```
     
 <b> Function showing XML view by ID </b>
-```def show_xml_by_id(request, id):
+```py
+    def show_xml_by_id(request, id):
     data = Item.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")```
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+```
 
 <b> Function showing JSON view by ID </b>
-```def show_json_by_id(request, id):
+```py
+    def show_json_by_id(request, id):
     data = Item.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")```
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+```
 
 For the `show_xml` and `show_json` functions, they both accept `request` parameters stores a variable `data = Item.objects.all()` to store all fetched `Item` objects, and returns the previously fetched data as `XML` and `JSON` formats respectively as an  `HttpResponse`.
 
