@@ -124,6 +124,13 @@ I created the URL routing for each of the views previously by opening the `urls.
 ]
 ```
 
+## Access the five URLs in point 2 using Postman, take screenshots of the results in Postman, and add them to README.md.
+<img src="/assets/htmlView.png">
+<img src="/assets/xmlView.png">
+<img src="/assets/jsonView.png">
+<img src="/assets/xmlByIDView.png">
+<img src="/assets/jsonByIDView.png">
+
 
 
 
