@@ -132,11 +132,135 @@ I created the URL routing for each of the views previously by opening the `urls.
 <img src="/assets/jsonByIDView.png">
 
 
+# PBP_Inventory | Assignment 4
+
+## Display the information of the logged-in user, such as their username, and applying cookies, such as last login, on the main application page.
+<img src="/assets/loginUser1.png">
+<img src="/assets/loginUser2.png">
 
 
+## What is UserCreationForm in Django? Explain its advantages and disadvantages.
+The UserCreationForm in Django is a built-in model that inherits from Django's ModelForm class (and imported from django.contrib.auth.forms) that is used for creating a new user for a web application; note that UserCreationForm has three fields that include username, password1, and password2. 
+
+The advantage of UserCreationForm in Django is that it is simple to implement to a web application as there is a default template from the Django framework to create a form for a particular user. The disadvantage of UserCreationForm is that it is limited to only the three fields of username, password1, and password2. For instance, we cannot add an email field if we were going to send a verification email to a user from the web application. Another disadvantage is the potential of hardcoding confidential/sensitive information to the form which is prone to exploits if visible to the general public. For instance, we may accidentally hardcode personal username or passwords into the UserCreationForm fields and upload it to a public repository (such as GitHub) without noticing.
 
 
+##  What is the difference between authentication and authorization in Django application? Why are both important?
+Authentication in a Django application could be defined as verifying a user to be who they claim to be (process of verifying who a user is when they login), while authorization is determining what an authenticated user is allowed to do (process of verifying that a user has legitimate access to something). Authentication and authorization are both important for four main reasons; in particular, these reasons are security, compliance, user experience, and control. 
 
+Both authentication/authorization ensure that only authorized users could access your API (application program interface) which prevents unauthorized data breaches, access to data, as well as other potential security risks. Additionally, proper authentication/authorization measures ensure compliance from your API in the Django Rest Framework with industry and government regulations. User experience and control are further emphasize the importance of authentication/authorization since users can create a personalized experience with their own accounts that they login to access personal resources(user experience), as well as preventing misuse/abuse to your API through authorization (control).
+
+
+## What are cookies in website? How does Django use cookies to manage user session data?
+Cookies could be defined as small pieces of information sent by a web server to your browser to be stored for future use; cookies will then be sent back by the web browser for future page requests on order to save bandwidth on the network. Additionally, cookies are usually made up of a single name-value pair send in the header of the client's HTTP POST or GET request, and are usually utilized for authentication, user tracking, as well as maintaining user preferences.
+
+Django uses cookies to manage user session data by storing them in a database, which is a model used to store user session data. First, the cookie parameter would be read when it is passed by the browser, and then data would be fetch and stored in a session model by Django. Afterwards, the information in the session would be modified as needed, and the corresponding cookie would then be sent back to the browser in the future whenever it is needed by the web application.
+
+## Are cookies secure to use? Is there potential risk to be aware of?
+Generally speaking, cookies are not secure by their nature. What matters is how they are utilized/implemented by the web application and how they are fetch or stored by the web browser. This is because cookies can contain the webpage's header, the user's personal preferences and sensitive information within a particular website, as well as validity and path information on the website. Due to this fact, cookies are prone to potential risks associated with it such as exploitation and attacks from cybercriminals that violate privacy and collect personal/sensitive information. These attacks may include Cross-site request forgery (CSRF), session fixation, cross-site scripting (XSS), cookie tossing attack, cookie overflow attack, and many more.
+
+
+## Explain how you implemented the checklist above step-by-step
+
+* __Implement registration, login, and logout functions to allow users to access the previous application.__<br>
+
+Firstly, I opened the `views.py` file and imported the necessary imports such as `redirect`, `UserCreationForm`, and `messages`. Following this, a function called `register` was created with the following code:
+
+```py
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+
+The `register` function accepts the `request` parameter (which is an HTTPrequest from the web browser) and uses the `POST` method for the request to save the `UserCreationForm` made by `form = UserCreationForm(request.POST)`. If the form created is valid (validated using `form.is_valid()`), the form is saved and a new data from the form is created through `form.save()` with a message  displayed to the user with `messages.success(request, 'Your account has been successfully created!')`. The register function returns `return redirect('main:show_main')` which redirects the page after saving the form. Note that an HTML file called `register.html` was created for the function in the `main\templates` folder afterwards.
+
+
+After importing `authenticate` and `login` imports (to authenticate and login the user given a successful authentication attempt), the `login_user` function was created next in `views.py` with the following code:
+
+```py
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            response = HttpResponseRedirect(reverse("main:show_main")) 
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            return response
+        else:
+            messages.info(request, 'Sorry, incorrect username or password. Please try again.')
+    context = {}
+    return render(request, 'login.html', context)
+```
+
+The function essentially authenticates a user utilizing a given username and password sent through the request through the code `authenticate(request, username=username, password=password)`. If a user is present (`user is not None`), then the function allows the user to log in and redirects them to the main page through `HttpResponseRedirect(reverse("main:show_main"))` and collects their cookies on their last login with `response.set_cookie('last_login', str(datetime.datetime.now()))` and returns the response. Otherwise, the function will output a message with the code `messages.info(request, 'Sorry, incorrect username or password. Please try again.')` Then, an HTML file called `login.html` was created in the `main/templates` folder for the login.
+
+
+Following this and still inside `views.py`, the `logout_user` function was implemented using the following code after importing `logout`:
+
+```py
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+
+``` 
+
+This function has the capability delete the currently logged in user session using `logout(request)` and returns the response `HttpResponseRedirect(reverse('main:login'))` after deleting the cookie for every last login of the user with `response.delete_cookie('last_login')`. Following this, a logout button was added to `main.html` and the `show_main` function was modified with in its context variable using `'last_login': request.COOKIES['last_login']` to add `last_login` cookie data to the HTTP response to display on the web page. 
+
+Finally, all three functions are imported to `urls.py` and a new url path to `urlpatterns` were added for each respective function to access them through the import:
+
+```py
+from main.views import register
+from main.views import login_user
+from main.views import logout_user
+
+urlpatterns = [
+    path('', show_main, name='show_main'),
+    path('create-product', create_product, name='create_product'),
+    path('xml/', show_xml, name='show_xml'),
+    path('json/', show_json, name='show_json'),
+    path('xml/<int:id>/', show_xml_by_id, name='show_xml_by_id'),
+    path('json/<int:id>/', show_json_by_id, name='show_json_by_id'),
+    path('register/', register, name='register'), #add url path to regsiter
+    path('login/', login_user, name='login'), #add url path to login
+    path('logout/', logout_user, name='logout'), #add url path to logout
+]
+
+```
+
+
+* __Create two user accounts with three dummy data entries for each account using the model previously created in the application.__<br>
+Two user accounts were created on the web application by registering them as well as creating a username and password for each account. Afterwards, 3 dummy data were added to each account by clicking the `Add New Product` button.
+
+
+* __Connect Item model with User.__<br>
+The Item model was connected with User by first importing `User` to `models.py` and then adding `user = models.ForeignKey(User, on_delete=models.CASCADE)` in the `Item` model (class). Then, the `create_product` in `views.py` was updated as such:
+
+```py
+
+def create_product(request):
+    form = ProductForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product = form.save(commit=False)
+        product.user = request.user
+        product.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+```
+
+The function was modified such that the `user` field was set to the `User` object to indicate the product belongs to that user when the user is currently logged-in. Afterwards, the `show_main` function was added with `'name' : request.user.username` so that it can request the corresponding username of the user when the main page is displayed to the user.
 
 
 
