@@ -232,7 +232,7 @@ urlpatterns = [
     path('json/', show_json, name='show_json'),
     path('xml/<int:id>/', show_xml_by_id, name='show_xml_by_id'),
     path('json/<int:id>/', show_json_by_id, name='show_json_by_id'),
-    path('register/', register, name='register'), #add url path to regsiter
+    path('register/', register, name='register'), #add url path to register
     path('login/', login_user, name='login'), #add url path to login
     path('logout/', logout_user, name='logout'), #add url path to logout
 ]
