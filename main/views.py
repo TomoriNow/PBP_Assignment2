@@ -20,6 +20,24 @@ from django.contrib.auth.decorators import login_required
 def show_main(request):
     products = Item.objects.filter(user=request.user)
     
+    if request.method == 'POST':
+        if 'increment' in request.POST:
+            item_id = request.POST.get('increment')
+            item = products.get(id=item_id)
+            item.amount += 1
+            item.save()
+        elif 'decrement' in request.POST:
+            item_id = request.POST.get('decrement')
+            item = products.get(id=item_id)
+            item.amount -= 1
+            item.save()
+        elif 'delete' in request.POST:
+            item_id = request.POST.get('delete')
+            item = products.get(id=item_id)
+            item.delete()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    item_count = products.count()
     context = {
         'appName' : 'Curry Under Armour Inventory',
         'name' : request.user.username,
@@ -27,6 +45,7 @@ def show_main(request):
         'description' : "The game’s most dynamic player needs basketball shoes that can keep up with him. Steph Curry basketball shoes are built from super-lightweight, breathable materials, and use our top cushioning like UA Flow and UA HOVR™ to cushion your landings and propel you forward.",
         'release_date' : '11 September 2023',
         'products' : products,
+        'item_count' : item_count,
         'last_login': request.COOKIES['last_login']
         if "last_login" in request.COOKIES.keys()
         else "",

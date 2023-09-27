@@ -21,10 +21,13 @@
     
     <hr></hr>
     
+    <p>You have saved {{ item_count }} Curry Brand items in this application</p>
+    
     <table>
         <tr>
             <th>Name</th>
             <th>Price</th>
+            <th>Amount</th>
             <th>Description</th>
             <th>Date Added</th>
         </tr>
@@ -35,8 +38,23 @@
             <tr>
                 <td>{{product.name}}</td>
                 <td>{{product.price}}</td>
+                <td>{{product.amount}}</td>
                 <td>{{product.description}}</td>
                 <td>{{product.product_release_date}}</td>
+                <td>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="increment" value="{{ product.id }}">
+                            Increase Amount
+                        </button>
+                        <button type="submit" name="decrement" value="{{ product.id }}">
+                            Decrease Amount
+                        </button>
+                        <button type="submit" name="delete" value="{{ product.id }}">
+                            Delete Item
+                        </button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>

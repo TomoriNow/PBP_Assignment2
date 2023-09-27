@@ -8,4 +8,5 @@ class Item(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     product_release_date = models.DateField(auto_now_add=True)
+    amount = models.IntegerField()
     
