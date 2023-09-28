@@ -42,18 +42,26 @@
                 <td>{{product.description}}</td>
                 <td>{{product.product_release_date}}</td>
                 <td>
-                    <form method="post">
-                        {% csrf_token %}
-                        <button type="submit" name="increment" value="{{ product.id }}">
+                    <a href="{% url 'main:increment_product' product.pk %}">
+                        <button>
                             Increase Amount
                         </button>
-                        <button type="submit" name="decrement" value="{{ product.id }}">
+                    </a>
+                    <a href="{% url 'main:decrement_product' product.pk %}">
+                        <button>
                             Decrease Amount
                         </button>
-                        <button type="submit" name="delete" value="{{ product.id }}">
-                            Delete Item
+                    </a>
+                    <a href="{% url 'main:edit_product' product.pk %}">
+                        <button>
+                            Edit
                         </button>
-                    </form>
+                    </a>
+                    <a href="{% url 'main:delete_product' product.pk %}">
+                        <button>
+                            Delete
+                        </button>
+                    </a>
                 </td>
             </tr>
         {% endfor %}
