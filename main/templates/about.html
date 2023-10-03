@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html'%}
+
+<body class="font-sans dark:bg-gray-200">
+    <h1 class="text-3xl font-bold text-center py-4 bg-slate-400">Curry Under Armour Inventory</h1>
+    <hr>
+    <h5 class="font-bold">Application Name:</h5>
+
+    <p class="py-4">{{ appName }}</p>
+
+    <h5 class="font-bold">Name:</h5>
+    <p class="py-4">{{ name }}</p>
+
+    <h5 class="font-bold">Class:</h5>
+    <p class="py-4">{{ class }}</p>
+
+    <h5 class="font-bold">Description:</h5>
+    <p class="py-4">{{ description }}</p>
+
+    <h5 class="font-bold">Release Date:</h5>
+    <p class="py-4">{{ release_date }}</p>
+</body>
+
+{% endblock content %}

@@ -36,6 +36,19 @@ def show_main(request):
 
     return render(request, 'main.html', context)
 
+def show_about(request):
+    products = Item.objects.filter(user=request.user)
+    
+    context = {
+        'appName' : 'Curry Under Armour Inventory',
+        'name' : request.user.username,
+        'class': 'PBP International Class',
+        'description' : "The game’s most dynamic player needs basketball shoes that can keep up with him. Steph Curry basketball shoes are built from super-lightweight, breathable materials, and use our top cushioning like UA Flow and UA HOVR™ to cushion your landings and propel you forward.",
+        'release_date' : '11 September 2023',
+    }
+    
+    return render(request, 'about.html', context)
+
 def create_product(request):
     form = ProductForm(request.POST or None)
 

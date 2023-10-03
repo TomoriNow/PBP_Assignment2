@@ -1,86 +1,77 @@
 {% extends 'base.html' %}
 {% block content %}
 {% include 'navbar.html'%}
-
-    <h1>Welcome to Curry Under Armour Inventory!</h1>
-
-    <h5>Application Name:</h5>
-    <p>{{ appName }}</p>
-
-    <h5>Name:</h5>
-    <p>{{ name }}</p>
-
-    <h5>Class:</h5>
-    <p>{{ class }}</p>
-
-    <h5>Description:</h5>
-    <p>{{ description }}</p>
-
-    <h5>Release Date:</h5>
-    <p>{{ release_date }}</p>
     
-    <hr></hr>
-    
-    <p>You have saved {{ item_count }} Curry Brand items in this application</p>
-    
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Date Added</th>
-        </tr>
-
-        {% comment %} Below is how to show the product data {% endcomment %}
-
-        {% for product in products %}
-            <tr>
-                <td>{{product.name}}</td>
-                <td>{{product.price}}</td>
-                <td>{{product.amount}}</td>
-                <td>{{product.description}}</td>
-                <td>{{product.product_release_date}}</td>
-                <td>
-                    <a href="{% url 'main:increment_product' product.pk %}">
-                        <button>
-                            Increase Amount
-                        </button>
-                    </a>
-                    <a href="{% url 'main:decrement_product' product.pk %}">
-                        <button>
-                            Decrease Amount
-                        </button>
-                    </a>
-                    <a href="{% url 'main:edit_product' product.pk %}">
-                        <button>
-                            Edit
-                        </button>
-                    </a>
-                    <a href="{% url 'main:delete_product' product.pk %}">
-                        <button>
-                            Delete
-                        </button>
-                    </a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    <br />
-    
-    <h5>Last login session: {{ last_login }}</h5>
-
-    <a href="{% url 'main:create_product' %}">
-        <button>
-            Add New Product
-        </button>
-    </a>
-    
-    <a href="{% url 'main:logout' %}">
-        <button>
-            Logout
-        </button>
-    </a>
+    <h1 class="text-3xl font-bold text-center py-4 bg-slate-400">Curry Under Armour Inventory</h1>
+    <hr>
+    <div class="dark:bg-gray-200">
+        <p class="font-bold pt-4 px-2">You have saved <u>{{ item_count }} Curry Brand items</u> in this application</p><br>
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Name</th>
+                        <th scope="col" class="px-6 py-3">Price</th>
+                        <th scope="col" class="px-6 py-3">Amount</th>
+                        <th scope="col" class="px-6 py-3">Description</th>
+                        <th scope="col" class="px-6 py-3">Date Added</th>
+                        <th scope="col" class="px-6 py-3">Modify Amount</th>
+                        <th scope="col" class="px-6 py-3">Modify Product</th>
+                    </tr>
+                </thead>
+                {% for product in products %}
+                {% comment %} Below is how to show the product data {% endcomment %}
+                <tbody>
+                    {% if forloop.last %}
+                    <tr class="font-bold dark:bg-teal-400 text-gray-900">
+                    {% else %}
+                    <tr class="font-bold dark:bg-gray-300 text-gray-900">
+                    {% endif %}
+                        <td class="px-6 py-4">{{product.name}}</td>
+                        <td class="px-6 py-4">{{product.price}}</td>
+                        <td class="px-6 py-4">{{product.amount}}</td>
+                        <td class="px-6 py-4">{{product.description}}</td>
+                        <td class="px-6 py-4">{{product.product_release_date}}</td>
+                        <td class="px-6 py-4 font-bold">
+                            <a href="{% url 'main:increment_product' product.pk %}" class="pr-6">
+                                <button class="cursor-pointer bg-green-500 text-white rounded-md px-2 py-2">
+                                    Increase Amount
+                                </button>
+                            </a>
+                            <a href="{% url 'main:decrement_product' product.pk %}">
+                                <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2">
+                                    Decrease Amount
+                                </button>
+                            </a>
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{% url 'main:edit_product' product.pk %}" class="pr-6">
+                                <button class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2">
+                                    Edit
+                                </button>
+                            </a>
+                            <a href="{% url 'main:delete_product' product.pk %}" class="pr-6">
+                                <button class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2">
+                                    Delete
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br />
+        <div class="pb-5 px-2 relative">
+            <a href="{% url 'main:create_product' %}" class="px-3">
+                <button class="cursor-pointer bg-yellow-500 text-white rounded-md px-2 py-2 font-semibold">
+                    Add New Product
+                </button>
+            </a>
+        </div>
+        <div class="pb-5 px-2 relative">
+            <h5 class="font-bold">Last login session: {{ last_login }}</h5>
+        </div>
+    </div>
 
 {% endblock content %}

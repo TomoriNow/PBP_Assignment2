@@ -5,41 +5,59 @@
 {% endblock meta %}
 
 {% block content %}
-
-<div class = "login">
-
-    <h1>Login</h1>
-
-    <form method="POST" action="">
-        {% csrf_token %}
-        <table>
-            <tr>
-                <td>Username: </td>
-                <td><input type="text" name="username" placeholder="Username" class="form-control"></td>
-            </tr>
-                    
-            <tr>
-                <td>Password: </td>
-                <td><input type="password" name="password" placeholder="Password" class="form-control"></td>
-            </tr>
-
-            <tr>
-                <td></td>
-                <td><input class="btn login_btn" type="submit" value="Login"></td>
-            </tr>
-        </table>
-    </form>
-
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}     
-        
-    Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a>
-
+<div class="min-h-screen py-6 flex flex-col justify-center bg-gradient-to-r from-yellow-400 to-blue-500 sm:py-12">
+    <div class="relative py-3 sm:max-w-xl sm:mx-auto">
+        <div
+			class="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
+		</div>
+        <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+            <div class="max-w-md mx-auto">
+                <div>
+                    <h1 class="text-2xl font-semibold">Login</h1>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                        
+                        {% if messages %}
+                            <ul>
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}     
+                        
+                        <form method="POST" action="{% url 'main:login' %}">
+                            {% csrf_token %}
+                            <table>
+                                <div class="relative">
+                                    <tr>
+                                        <td class="pr-3 py-4">Username: </td>
+                                        <td>
+                                            <input type="text" name="username" placeholder="Username" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 sm:rounded-3xl">
+                                        </td>
+                                    </tr>
+                                </div>
+                                
+                                <div class="relative">
+                                    <tr>
+                                        <td class="pr-3 py-4">Password: </td>
+                                        <td><input type="password" name="password" placeholder="Password" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 sm:rounded-3xl"></td>
+                                    </tr>
+                                </div>
+                                <div class="relative">
+                                    <tr>
+                                        <td class="pb-3"><input class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-1 font-semibold" type="submit" value="Login"></td>
+                                    </tr>
+                                </div>
+                            
+                            </table>
+                        </form>
+                            
+                        <a href="{% url 'main:register' %}" class="bg-blue-500 text-white rounded-md px-2 py-1 font-semibold">Register Account Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock content %}

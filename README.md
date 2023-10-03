@@ -263,5 +263,439 @@ def create_product(request):
 The function was modified such that the `user` field was set to the `User` object to indicate the product belongs to that user when the user is currently logged-in. Afterwards, the `show_main` function was added with `'name' : request.user.username` so that it can request the corresponding username of the user when the main page is displayed to the user.
 
 
+# PBP_Inventory | Assignment 5
+
+
+##  Explain the purpose of some CSS element selector and when to use it.
+
+1. ID Selector: The ID selector is a CSS selector that targets an element within an HTML file that has a specific value for its `id` attritbute. Note that the ID selector is utilized to select one unique element since the id of an element is considered unique within a page. Furthermore, we write a hash (`#`) character followed by the id of an element in order to select the element that has a specific id. For instance, `#something1` selects an HTML element with `id="something1"`.
+
+2. Class Selector: The Class selector targets an HTML element that is specified with a certain value in its `class` attribute. We utilized the Class selector by  writing a period (`.`) and then followed by the defined class name for the element in the HTML file. For instance, `.something2` selects an HTML element with `class="something"`. Note that you can also specify only particular HTML elements is selected by a class such as `element.something2`.
+
+3. Element Selector: The Element selector essentially targets all HTML elements of a particular type. Note that this selector is used when we are trying to apply a style towards all instanecs of a certain HTML element. For example, we can write `h1` which targets an HTML element or tag `<h1>`. We could also write the Element selector without any leading hash (`#`) or period (`.`) characters.
+
+
+## Explain some of the HTML5 tags that you know.
+
+1. `<nav>`: This tag defines a section of navigation links; specifically used to create a navigation bar/area for a certain website.
+2. `<article>`: This tag is used to define an independent piece of content within a document. For example, a newspaper article or an entry in a blog.
+2. `<section>`: This tag is used to represent a particular section within the HTML file, such as a section of a document, a header, footer, etc.
+
+
+##  What are the differences between margin and padding?
+
+According to the CSS Box Model, margin could be defined as the transparent space around the Border of an element (which is another section in the CSS Box Model) and is the outermost layer of the Box Model. Conversely, padding is used to represent the transparent space around the content of an element and is the innermost layer within the CSS Box Model.
+
+
+## What are the differences between the CSS framework Tailwind and Bootstrap? When should we use Bootstrap rather than Tailwind, and vice versa?
+
+Tailwind CSS constructs layouts through the composition of predefined utility classes, allowing for a highly adaptable and flexible approach to styling. Its CSS file remains compact, loading only the utility classes applied in a project, which contributes to smaller file sizes. However, mastering Tailwind CSS can be initially challenging because it demands an understanding of how to effectively utilize and combine these utility classes.
+
+Conversely, Bootstrap relies on pre-designed styles and components, offering a collection of readily available designs that can be readily implemented. This framework yields larger CSS files due to the inclusion of numerous predefined components. Bootstrap's strength lies in its ability to maintain design consistency throughout a project using these components. Furthermore, Bootstrap is an excellent choice for beginners, as it presents a gentler learning curve, allowing newcomers to commence with pre-made components and styles.
+
+Tailwind is a good choice when you want fine-grained control over your styles, need to build custom designs, or prefer a more minimalistic and utility-first approach. On the other hand, Bootstrap is a good choice when you want to quickly prototype a project or if you prefer using pre-designed components to speed up development. It's also a good fit for projects where you want a consistent and visually appealing default design.
+
+
+## Explain how you implemented the checklist above step-by-step.
+
+* __Customize login, register, and add item page as creative as possible.__<br>
+
+Before customizing the pages, I first added the `<meta name="viewport">` tag to the `base.html` file so that my web page could adapy to the size and behavior of mobile devices. Afterwards, I created two new functions in `views.py` called `edit_product` (which also has a corresponding html file called `edit_product.html`) and `delete_product` so that I could edit and delete products on my web application according to their specific id to identify which product belongs to which user:
+
+```py
+    def edit_product(request, id):
+    # Get product by ID
+    product = Product.objects.get(pk = id)
+
+    # Set product as instance of form
+    form = ProductForm(request.POST or None, instance=product)
+
+    if form.is_valid() and request.method == "POST":
+        # Save the form and return to home page
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_product.html", context)
+```
+
+```py
+    def delete_product(request, id):
+    # Get data by ID
+    product = Product.objects.get(pk=id)
+    # Delete data
+    product.delete()
+    # Return to the main page
+    return HttpResponseRedirect(reverse('main:show_main'))
+```
+
+Following this, I imported these functions into `urls.py` and created a path url to `urlpatterns` to access both of the imported functions:
+
+```py
+
+from main.views import edit_product, delete_product
+
+...
+path('edit-product/<int:id>', edit_product, name='edit_product'),
+path('delete/<int:id>', delete_product, name='delete_product'), 
+...
+
+```
+
+Afterwards, I customized the pages using Tailwind CSS into my django project. I first had to setup the Tailwind CSS Framework and installed NodeJS and  `django-tailwind` into the project using `python -m pip install django-tailwind` and `python -m pip install django-tailwind[reload]` for automatic page reloads. Then, I had to add `'tailwind'` into the `INSTALLED_APPS` in `settings.py`:
+
+```py
+INSTALLED_APPS = [
+  # other Django apps
+  'tailwind',
+]
+```
+
+I then initialized a Tailwind CSS compatible Django app by naming it `theme` to the django project using `python manage.py tailwind init` and then proceeded to add `'theme'` into the `INSTALLED_APPS`:
+
+```py
+INSTALLED_APPS = [
+  # other Django apps
+  'tailwind',
+  'theme'
+]
+```
+I also had to make sure `INTERNAL_IPS` was added to `settings.py`:
+
+```py
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+```
+
+I also installed Tailwind Dependencies using `python manage.py tailwind install` and modified my `base.html` file by adding `{% load static tailwind_tags %}` and `{% tailwind_css %}` into the head to include Tailwind's stylesheet. Configuring automatic page reloads was next by adding `'django_browser_reload'` to `INSTALLED_APPS` and the middleware `'django_browser_reload.middleware.BrowserReloadMiddleware'` to `MIDDLEWARE` in `settings.py`. Finally, I imported `path("__reload__/", include("django_browser_reload.urls")),` into `urlpatterns` in `urls.py` within my main application's root folder and started to use Tailwind by running the command `python manage.py tailwind start`. 
+
+
+1. The login page was customized using the following code for Tailwind:
+```py
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen py-6 flex flex-col justify-center bg-gradient-to-r from-yellow-400 to-blue-500 sm:py-12">
+    <div class="relative py-3 sm:max-w-xl sm:mx-auto">
+        <div
+			class="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
+		</div>
+        <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+            <div class="max-w-md mx-auto">
+                <div>
+                    <h1 class="text-2xl font-semibold">Login</h1>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                        
+                        {% if messages %}
+                            <ul>
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}     
+                        
+                        <form method="POST" action="{% url 'main:login' %}">
+                            {% csrf_token %}
+                            <table>
+                                <div class="relative">
+                                    <tr>
+                                        <td class="pr-3 py-4">Username: </td>
+                                        <td>
+                                            <input type="text" name="username" placeholder="Username" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 sm:rounded-3xl">
+                                        </td>
+                                    </tr>
+                                </div>
+                                
+                                <div class="relative">
+                                    <tr>
+                                        <td class="pr-3 py-4">Password: </td>
+                                        <td><input type="password" name="password" placeholder="Password" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 sm:rounded-3xl"></td>
+                                    </tr>
+                                </div>
+                                <div class="relative">
+                                    <tr>
+                                        <td class="pb-3"><input class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-1 font-semibold" type="submit" value="Login"></td>
+                                    </tr>
+                                </div>
+                            
+                            </table>
+                        </form>
+                            
+                        <a href="{% url 'main:register' %}" class="bg-blue-500 text-white rounded-md px-2 py-1 font-semibold">Register Account Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+```
+
+2. The register page was customized using the following code for Tailwind CSS along with some additional installations using `django-widget-tweaks` which allowed me to customized and render Django UserCreationForms using `render_field`:
+
+```py
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block meta %}
+    <title>Register</title>
+{% endblock meta %}
+
+{% block content %}  
+<section class="bg-gray-50 bg-gradient-to-r from-yellow-400 to-blue-500">
+    <div class ="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+            Curry Under Armour Inventory
+        </a>
+        <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Register</h1>  
+                    <form method="POST" class="space-y-4 md:space-y-6" action="{% url 'main:register'%}">  
+                        {% csrf_token %}
+                        <div>
+                            <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Username</label>
+                            {% render_field form.username name="username" id="username" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Username" required="" %}
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                            {% render_field form.password1 name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="" %}
+                        </div>
+                        <div>
+                            <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                            {% render_field  form.password2 id="confirm-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required=""%}
+                        </div>
+                        <input type="submit" name="submit" value="Create an account" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2 font-semibold text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" />
+                        <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                            Already have an account? <a href="{% url 'main:login' %}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
+                        </p>
+                    </form>
+
+                {% if messages %}  
+                    <ul>   
+                        {% for message in messages %}  
+                            <li>{{ message }}</li>  
+                            {% endfor %}  
+                    </ul>   
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+```
+
+3. The add item page was customized using the following code in Tailwind CSS and using `django-widget-tweaks`:
+
+```py
+{% extends 'base.html' %} 
+{% load widget_tweaks %}
+{% block content %}
+
+<section class="bg-gray-50 dark:bg-white-400">
+    <div class ="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Add Product</h1>  
+                    <form method="POST" class="space-y-4 md:space-y-6" action="{% url 'main:create_product'%}">  
+                        {% csrf_token %}
+                        <div>
+                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
+                            {% render_field form.name name="Name" id="Name" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Name" required="" %}
+                        </div>
+                        <div>
+                            <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
+                            {% render_field form.price name="price" id="price" placeholder="Price of Product" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="" %}
+                        </div> 
+                        <div>
+                            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
+                            {% render_field  form.description id="description" placeholder="Product Description" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required=""%}
+                        </div>
+                        <div>
+                            <label for="amount" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount</label>
+                            {% render_field  form.amount id="amount" placeholder="Product Amount" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required=""%}
+                        </div>
+                        <input type="submit" name="submit" value="Add Product" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2 font-semibold text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" />
+                    </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+```
+
+* __Customize the inventory list page so it becomes more attractive, either by adding colors or using another approach (such as Cards) to show the items, or both.__<br>
+
+I customized the inventory list page using a table to represent the list of items and their descriptions, and moved the add, delete, edit product/item buttons into visually appealing positions (and customized them as well) using Tailwind CSS. Furthermore, I added a navigation bar and customized it as well using Tailwind CSS and placed the logout button on the navigation bar. Following this, I also created an about page for the website that is placed on the navigation bar.
+
+1. Customizing inventory list page on `main.html`:
+
+```py
+
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html'%}
+    
+    <h1 class="text-3xl font-bold text-center py-4 bg-slate-400">Curry Under Armour Inventory</h1>
+    <hr>
+    <div class="dark:bg-gray-200">
+        <p class="font-bold pt-4 px-2">You have saved <u>{{ item_count }} Curry Brand items</u> in this application</p><br>
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Name</th>
+                        <th scope="col" class="px-6 py-3">Price</th>
+                        <th scope="col" class="px-6 py-3">Amount</th>
+                        <th scope="col" class="px-6 py-3">Description</th>
+                        <th scope="col" class="px-6 py-3">Date Added</th>
+                        <th scope="col" class="px-6 py-3">Modify Amount</th>
+                        <th scope="col" class="px-6 py-3">Modify Product</th>
+                    </tr>
+                </thead>
+                {% for product in products %}
+                {% comment %} Below is how to show the product data {% endcomment %}
+                <tbody>
+                    {% if forloop.last %}
+                    <tr class="font-bold dark:bg-teal-400 text-gray-900">
+                    {% else %}
+                    <tr class="font-bold dark:bg-gray-300 text-gray-900">
+                    {% endif %}
+                        <td class="px-6 py-4">{{product.name}}</td>
+                        <td class="px-6 py-4">{{product.price}}</td>
+                        <td class="px-6 py-4">{{product.amount}}</td>
+                        <td class="px-6 py-4">{{product.description}}</td>
+                        <td class="px-6 py-4">{{product.product_release_date}}</td>
+                        <td class="px-6 py-4 font-bold">
+                            <a href="{% url 'main:increment_product' product.pk %}" class="pr-6">
+                                <button class="cursor-pointer bg-green-500 text-white rounded-md px-2 py-2">
+                                    Increase Amount
+                                </button>
+                            </a>
+                            <a href="{% url 'main:decrement_product' product.pk %}">
+                                <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2">
+                                    Decrease Amount
+                                </button>
+                            </a>
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{% url 'main:edit_product' product.pk %}" class="pr-6">
+                                <button class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2">
+                                    Edit
+                                </button>
+                            </a>
+                            <a href="{% url 'main:delete_product' product.pk %}" class="pr-6">
+                                <button class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2">
+                                    Delete
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br />
+        <div class="pb-5 px-2 relative">
+            <a href="{% url 'main:create_product' %}" class="px-3">
+                <button class="cursor-pointer bg-yellow-500 text-white rounded-md px-2 py-2 font-semibold">
+                    Add New Product
+                </button>
+            </a>
+        </div>
+        <div class="pb-5 px-2 relative">
+            <h5 class="font-bold">Last login session: {{ last_login }}</h5>
+        </div>
+    </div>
+
+{% endblock content %}
+```
+
+2. Customizing navigation bar by adding `navbar.html` and using Tailwind CSS:
+
+```py
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Main navigation container -->
+<nav
+  class=" font-sans relative flex w-full flex-nowrap items-center justify-between bg-indigo-400 py-2 text-neutral-500 shadow-lg hover:text-neutral-700 focus:text-neutral-700 dark:bg-#3393FF lg:flex-wrap lg:justify-start lg:py-4"
+  data-te-navbar-ref>
+  <div class="flex w-full flex-wrap items-center justify-between px-3">
+    <div class="ml-2">
+      <a class="font-semibold text-xl py-1 text-neutral-800 dark:text-neutral-1000" href="{% url 'main:show_main' %}"
+        >Curry Under Armour Inventory</a>
+    </div>
+    <!-- Collapsible navbar container -->
+    <div
+      class="!visible mt-2 hidden flex-grow basis-[100%] items-center lg:mt-0 lg:!flex lg:basis-auto"
+      id="navbarSupportedContent3"
+      data-te-collapse-item>
+      <!-- Left links -->
+      <ul
+        class="list-style-none mr-auto flex flex-col lg:mt-1 lg:flex-row px-5">
+        <!-- Features link -->
+        <li
+          class="ml-2 pl-2 lg:mb-0 lg:pl-0 lg:pr-2"
+          data-te-nav-item-ref>
+          <h1 class="text-xl dark:text-neutral-200 font-semibold pr-10">Welcome! {{name}}</h1>
+        </li>
+      </ul>
+      <button class="text-xl py-1 font-semibold p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400">
+        <a href="{% url 'main:about' %}">About</a>
+      </button>
+      <button class="text-xl py-1 font-semibold p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400">
+        <a href="{% url 'main:logout' %}">Logout</a>
+      </button>
+    </div>
+  </div>
+</nav>
+
+{% endblock content %}
+```
+
+3. Creating About page called `about.html` and adding a URL Path to `urls.py`
+
+```py
+
+{% extends 'base.html' %}
+{% block content %}
+{% include 'navbar.html'%}
+
+<body class="font-sans dark:bg-gray-200">
+    <h1 class="text-3xl font-bold text-center py-4 bg-slate-400">Curry Under Armour Inventory</h1>
+    <hr>
+    <h5 class="font-bold">Application Name:</h5>
+
+    <p class="py-4">{{ appName }}</p>
+
+    <h5 class="font-bold">Name:</h5>
+    <p class="py-4">{{ name }}</p>
+
+    <h5 class="font-bold">Class:</h5>
+    <p class="py-4">{{ class }}</p>
+
+    <h5 class="font-bold">Description:</h5>
+    <p class="py-4">{{ description }}</p>
+
+    <h5 class="font-bold">Release Date:</h5>
+    <p class="py-4">{{ release_date }}</p>
+</body>
+
+{% endblock content %}
+
+```
+
+
+
+
 
 

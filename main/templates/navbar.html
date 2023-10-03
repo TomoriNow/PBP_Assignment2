@@ -1,22 +1,38 @@
-<nav class="navbar navbar-expand-lg bg-body-primary" style="background-color: #3393ff;">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Curry Under Armour Inventory</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <h3>{{name}}</h3>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'main:logout' %}">Logout</a>
-          </li>
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
-      </div>
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Main navigation container -->
+<nav
+  class=" font-sans relative flex w-full flex-nowrap items-center justify-between bg-indigo-400 py-2 text-neutral-500 shadow-lg hover:text-neutral-700 focus:text-neutral-700 dark:bg-#3393FF lg:flex-wrap lg:justify-start lg:py-4"
+  data-te-navbar-ref>
+  <div class="flex w-full flex-wrap items-center justify-between px-3">
+    <div class="ml-2">
+      <a class="font-semibold text-xl py-1 text-neutral-800 dark:text-neutral-1000" href="{% url 'main:show_main' %}"
+        >Curry Under Armour Inventory</a>
     </div>
-  </nav>
+    <!-- Collapsible navbar container -->
+    <div
+      class="!visible mt-2 hidden flex-grow basis-[100%] items-center lg:mt-0 lg:!flex lg:basis-auto"
+      id="navbarSupportedContent3"
+      data-te-collapse-item>
+      <!-- Left links -->
+      <ul
+        class="list-style-none mr-auto flex flex-col lg:mt-1 lg:flex-row px-5">
+        <!-- Features link -->
+        <li
+          class="ml-2 pl-2 lg:mb-0 lg:pl-0 lg:pr-2"
+          data-te-nav-item-ref>
+          <h1 class="text-xl dark:text-neutral-200 font-semibold pr-10">Welcome! {{name}}</h1>
+        </li>
+      </ul>
+      <button class="text-xl py-1 font-semibold p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400">
+        <a href="{% url 'main:about' %}">About</a>
+      </button>
+      <button class="text-xl py-1 font-semibold p-0 text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400">
+        <a href="{% url 'main:logout' %}">Logout</a>
+      </button>
+    </div>
+  </div>
+</nav>
+
+{% endblock content %}
