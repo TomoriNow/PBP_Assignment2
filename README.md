@@ -304,29 +304,29 @@ Before customizing the pages, I first added the `<meta name="viewport">` tag to 
 
 ```py
     def edit_product(request, id):
-    # Get product by ID
-    product = Product.objects.get(pk = id)
+        # Get product by ID
+        product = Product.objects.get(pk = id)
 
-    # Set product as instance of form
-    form = ProductForm(request.POST or None, instance=product)
+        # Set product as instance of form
+        form = ProductForm(request.POST or None, instance=product)
 
-    if form.is_valid() and request.method == "POST":
-        # Save the form and return to home page
-        form.save()
-        return HttpResponseRedirect(reverse('main:show_main'))
+        if form.is_valid() and request.method == "POST":
+            # Save the form and return to home page
+            form.save()
+            return HttpResponseRedirect(reverse('main:show_main'))
 
-    context = {'form': form}
-    return render(request, "edit_product.html", context)
+        context = {'form': form}
+        return render(request, "edit_product.html", context)
 ```
 
 ```py
     def delete_product(request, id):
-    # Get data by ID
-    product = Product.objects.get(pk=id)
-    # Delete data
-    product.delete()
-    # Return to the main page
-    return HttpResponseRedirect(reverse('main:show_main'))
+        # Get data by ID
+        product = Product.objects.get(pk=id)
+        # Delete data
+        product.delete()
+        # Return to the main page
+        return HttpResponseRedirect(reverse('main:show_main'))
 ```
 
 Following this, I imported these functions into `urls.py` and created a path url to `urlpatterns` to access both of the imported functions:
@@ -335,10 +335,13 @@ Following this, I imported these functions into `urls.py` and created a path url
 
 from main.views import edit_product, delete_product
 
-...
-path('edit-product/<int:id>', edit_product, name='edit_product'),
-path('delete/<int:id>', delete_product, name='delete_product'), 
-...
+urlpatterns = [
+    ...
+    path('edit-product/<int:id>', edit_product, name='edit_product'),
+    path('delete/<int:id>', delete_product, name='delete_product'), 
+    ...
+]
+
 
 ```
 
