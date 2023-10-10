@@ -1,77 +1,149 @@
 {% extends 'base.html' %}
 {% block content %}
-{% include 'navbar.html'%}
-    
+{% include 'navbar.html'%}    
     <h1 class="text-3xl font-bold text-center py-4 bg-slate-400">Curry Under Armour Inventory</h1>
     <hr>
-    <div class="dark:bg-gray-200">
+    
+    <div class="dark:bg-gray-200 px-8">
         <p class="font-bold pt-4 px-2">You have saved <u>{{ item_count }} Curry Brand items</u> in this application</p><br>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">Name</th>
-                        <th scope="col" class="px-6 py-3">Price</th>
-                        <th scope="col" class="px-6 py-3">Amount</th>
-                        <th scope="col" class="px-6 py-3">Description</th>
-                        <th scope="col" class="px-6 py-3">Date Added</th>
-                        <th scope="col" class="px-6 py-3">Modify Amount</th>
-                        <th scope="col" class="px-6 py-3">Modify Product</th>
-                    </tr>
-                </thead>
-                {% for product in products %}
-                {% comment %} Below is how to show the product data {% endcomment %}
-                <tbody>
-                    {% if forloop.last %}
-                    <tr class="font-bold dark:bg-teal-400 text-gray-900">
-                    {% else %}
-                    <tr class="font-bold dark:bg-gray-300 text-gray-900">
-                    {% endif %}
-                        <td class="px-6 py-4">{{product.name}}</td>
-                        <td class="px-6 py-4">{{product.price}}</td>
-                        <td class="px-6 py-4">{{product.amount}}</td>
-                        <td class="px-6 py-4">{{product.description}}</td>
-                        <td class="px-6 py-4">{{product.product_release_date}}</td>
-                        <td class="px-6 py-4 font-bold">
-                            <a href="{% url 'main:increment_product' product.pk %}" class="pr-6">
-                                <button class="cursor-pointer bg-green-500 text-white rounded-md px-2 py-2">
-                                    Increase Amount
-                                </button>
-                            </a>
-                            <a href="{% url 'main:decrement_product' product.pk %}">
-                                <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2">
-                                    Decrease Amount
-                                </button>
-                            </a>
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="{% url 'main:edit_product' product.pk %}" class="pr-6">
-                                <button class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2">
-                                    Edit
-                                </button>
-                            </a>
-                            <a href="{% url 'main:delete_product' product.pk %}" class="pr-6">
-                                <button class="cursor-pointer bg-blue-500 text-white rounded-md px-2 py-2">
-                                    Delete
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <br />
-        <div class="pb-5 px-2 relative">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table id="product_table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400"></table>
+            </div>
+    </div>
+    
+    <div class="relative flex min-h-screen flex-col pl-7 py-7 overflow-hidden dark:bg-gray-200">
+        
+        <!--modal trigger-->
+        <div>
+            <label for="tw-modal" class="curosr-pointer rounded bg-black px-4 py-4 text-white active:bg-slate-400">Add Product by Ajax</label>
             <a href="{% url 'main:create_product' %}" class="px-3">
-                <button class="cursor-pointer bg-yellow-500 text-white rounded-md px-2 py-2 font-semibold">
+                <button class="cursor-pointer dark:bg-yellow-400 text-white rounded-md ml-5 px-4 py-4 font-semibold">
                     Add New Product
                 </button>
             </a>
         </div>
-        <div class="pb-5 px-2 relative">
+        
+        <div class="pb-5 pt-10 relative">
             <h5 class="font-bold">Last login session: {{ last_login }}</h5>
         </div>
+        
+        <input type="checkbox" id="tw-modal" class="peer fixed appearance-none opacity-0"/>
+        
+        <!---modal-->
+        <label for="tw-modal" class="pointer-events-none invisible fixed inset-0 flex cursor-pointer items-center justify-center overflow-hidden overscroll-contain bg-slate-700/30 opacity-0 transition-all duration-200 ease-in-out peer-checked:pointer-events-auto peer-checked:visible peer-checked:opacity-100 peer-checked:[&>*]:translate-y-0 peer-checked0[&>*]:scale-100">
+            <!--modal box-->
+            <label class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-blue-400 dark:border-gray-700 h-fit max-w-lg scale-90 overflow-y-auto overscroll-contain shadow-2xl transition" for="">
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white pb-5 pt-5 pl-5">Add New Product</h1>
+                <form id="form" onsubmit="return false;" class="px-5">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Name:</label>
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="name" name="name"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Price:</label>
+                        <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="price" name="price"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Description:</label>
+                        <textarea class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="description" name="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Amount:</label>
+                        <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="amount" name="amount"></input>
+                    </div>
+                </form>
+                <div class="mt-7 ml-5 mb-5">
+                    <label for="tw-modal" type="button" class="cursor-pointer dark:bg-red-500 text-white rounded-md px-2 py-2 font-semibold transition-all duration-200 ease-in-out peer-checked:pointer-events-auto peer-checked:visible peer-checked:opacity-100 peer-checked:[&>*]:translate-y-0 peer-checked0[&>*]:scale-100">Close</label>
+                    <button type="button" class="cursor-pointer dark:bg-green-500 text-white rounded-md ml-3 px-2 py-2 font-semibold" id="button_add" for="tw-modal">Add Product</button>
+                </div>
+            </label>
     </div>
+        
+    
+    
+    <script>
+        async function getProducts() {
+            return fetch("{% url 'main:get_product_json' %}").then((res) => res.json())
+        }
+        
+        async function refreshProducts() {
+            document.getElementById("product_table").innerHTML = ""
+            const products = await getProducts()
+            let htmlString = `
+            <thead class="text-xs text-left text-sm text-gray-700 w-full uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Name</th>
+                    <th scope="col" class="px-6 py-3">Price</th>
+                    <th scope="col" class="px-6 py-3">Amount</th>
+                    <th scope="col" class="px-6 py-3">Description</th>
+                    <th scope="col" class="px-6 py-3">Date Added</th>
+                    <th scope="col" class="px-6 py-3">Modify Product</th>
+                </tr>
+            </thead>`
+            
+            products.forEach((item, index) => {
+                if (index == products.length-1) {
+                    htmlString += `\n
+                    <tbody>
+                            <tr class="font-bold dark:bg-yellow-300 text-gray-900">
+                            <td class="px-6 py-4">${item.fields.name}</td>
+                            <td class="px-6 py-4">${item.fields.price}</td>
+                            <td class="px-6 py-4">${item.fields.amount}</td>
+                            <td class="px-6 py-4">${item.fields.description}</td>
+                            <td class="px-6 py-4">${item.fields.product_release_date}</td>
+                            <td class="px-6 py-4">
+                                <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2" onclick="deleteProduct(${item.pk})">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>`
+                } else {
+                    htmlString += `\n
+                    <tbody>
+                            <tr class="font-bold dark:bg-gray-300 text-gray-900">
+                            <td class="px-6 py-4">${item.fields.name}</td>
+                            <td class="px-6 py-4">${item.fields.price}</td>
+                            <td class="px-6 py-4">${item.fields.amount}</td>
+                            <td class="px-6 py-4">${item.fields.description}</td>
+                            <td class="px-6 py-4">${item.fields.product_release_date}</td>
+                            <td class="px-6 py-4">
+                                <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2" onclick="deleteProduct(${item.pk})">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>`
+                } 
+                 
+                        })
+            
+            document.getElementById("product_table").innerHTML = htmlString
+        }
+    
+        refreshProducts()
+        
+        function addProduct() {
+            fetch("{% url 'main:add_product_ajax' %}", {
+                method: "POST",
+                body: new FormData(document.querySelector('#form'))
+            }).then(refreshProducts)
+    
+            document.getElementById("form").reset()
+            return false
+        }
+        
+        function deleteProduct(id) {
+            fetch("/delete-product-ajax/" + id, {
+                method: "POST"
+            }).then(refreshProducts)
+            
+            document.getElementById("form").reset()
+            return false
+        }
+        
+        document.getElementById("button_add").onclick = addProduct
+    </script>
 
 {% endblock content %}

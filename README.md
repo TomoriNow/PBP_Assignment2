@@ -697,8 +697,282 @@ I customized the inventory list page using a table to represent the list of item
 
 ```
 
+# PBP_Inventory | Assignment 6
+
+## Explain the difference between asynchronous programming and synchronous programming.
+Asychnronous programming is a method of programming that utilizes non-blocking architechture so that the execution of a task does not depend on a another task in the program. This means that tasks can run simultaneously. Asynchronous programming has characterisitcs such as multi-thread (which means operations or programs can run in parallel), non-blocking (which means it has the ability to send multiple requests to a server), and also has the ability to increase the throughput of the program since it has multiple (parallel) operations that run at the same time. For example, in a client-server architechture asynchronus program can make a request to the server and continue working while waiting a response from the server which is more efficient.
+
+Conversely, Synchronous programming utilizes blocking architechture so that the execution of a task in the program is dependent on completing the one before it. Each task needs an answer or appropriate response before moving on to the next task. Synchronous programming has characteristics such as single-thread (only one operation or program can run at a time), blocking (which means it will only send the server one request at a time and wait for the server's response to the request before moving on to another task), and also has the characteristic of being more methodical and slow.
+
+## In the implementation of JavaScript and AJAX, there is an implemented paradigm called the event-driven programming paradigm. Explain what this paradigm means and give one example of its implementation in this assignment.
+
+The event-driven programming paradigm is based on the idea that a program could be implemented to be "event-driven", meaning that the program is designed to respond to user actions/events (either through their hardware or software) such as user interactions (mouse button clicks/movement/scrolling, keyboard pressses, etc) and system events (timers, file input/output, network communication/events, etc). Thus, the flow of a program is determined by events that occur during its execution by waiting for specific events to occur and then triggering corresponding event handlers or callbakcs to respond to those events. 
+
+One example of its implementation in this assignment is through the JavaScript code (and AJAX implementation) placed in the body of the `main.html` page between the `<script></script>` tags. For instance, the `async` function called `getProducts` utilizes the `fetch()` API (which provides an interface to fetch resources including across network) to get the JSON data asynchronously from the web application in the event that the user clicks the `Add Product` button in the `Add Product by Ajax` user interface. Then, the `refreshProducts` function will wait for the event/result from `getProducts` async function and update the table according to the product that the user added which can be seen from `const products = await getProducts()`.
+
+## Explain the implementation of asynchronous programming in AJAX.
+
+The implementation of asynchronous programming in AJAX utilizes a particular way of using JavaScript in order to apply asynchronous programming. AJAX usually downloads the data from a server in the background (or sending data to the server in the background) and allows dynamically updating a page (and updating the data on the page asynchronously) without making the user wait or have to refresh/reload the web page multiple times every time a change is made to the page. AJAX essentially avoids the "click-wait-refresh" pattern. This is because AJAX could use XML, text, or JSON to send the data to the server. Methodically speaking, when an event occurs on the web page, an `XMLHttpRequest` object is created by JavaScript which then sends a request to the server. The server then processes the request and returns an appropriate response to the web page and is read via JavaScript. Following this, JavaScript will trigger actions based on the response read such as updating (Inserting or Deleting or Editing) the data on the web page.
 
 
+## In this semester, the implementation of AJAX is done using the Fetch API rather than the jQuery library. Compare the two technologies and write down your opinion which technology is better to use.
 
 
+The Fetch API and jQuery are both tools used for making asynchronous requests in web development, but they differ significantly in terms of their technical approach and capabilities.
 
+The Fetch API is a modern JavaScript API which provides a standardized way to make HTTP requests. It offers a more flexible and promise-based approach (making requests with a `Promise`) for handling asynchronous operations and fetching resources (including across network). With the Fetch API, you can make requests to servers and handle responses using `Promises`, allowing for cleaner and more concise code. It supports various data formats, not just XML, and is versatile for working with JSON, text, or other data types. Additionally, the Fetch API is lightweight and does not require any additional libraries or dependencies, making it a great choice for developing a web application.
+
+On the other hand, jQuery is a popular JavaScript library that has been used extensively for AJAX requests in the past. It provides a simplified and cross-browser-compatible way to perform AJAX operations. jQuery abstracts many of the complexities of handling different browsers and provides a consistent API for making AJAX calls. However, jQuery is a larger library and includes many other features beyond AJAX, which may lead to unnecessary overhead if you are only using it to process AJAX requests. It also relies on callback functions, which can make the code less readable and harder to maintain compared to the Promise-based approach of the Fetch API.
+
+In my opinion, If you're building a modern web application and want a lightweight and flexible solution with minimum overhead and dependencies, the Fetch API is the better choice compared to jQuery. However, if you're maintaining a legacy project (such as a website that has been running for a very long time) or need to ensure compatibility with older browsers, jQuery's simplicity and cross-browser support may still be the appropriate choice.
+
+## Explain how you implemented the checklist above step-by-step (not just following the tutorial).
+
+* __AJAX GET.__<br>
+
+To start implementing AJAX GET into the inventory, I had to set up the `get_product_json` function in order to return JSON data for each product item in the data table. This was done in `views.py` and the following function:
+
+```py
+def get_product_json(request):
+    product_item = Item.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize('json', product_item))
+```
+
+This function accepts an HTTPrequest as its parameter and filters every product according to the specific user currently logged in using `product_item = Item.objects.filter(user=request.user)` and then returns JSON data.
+
+Along with this function I also implemented a `add_product_ajax` function in `views.py` after importing `from django.views.decorators.csrf import csrf_exempt` and the `@csrf_exempt` decorator such as the following:
+
+```py
+@csrf_exempt
+def add_product_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get("name")
+        price = request.POST.get("price")
+        amount = request.POST.get("amount")
+        description = request.POST.get("description")
+        user = request.user
+
+        new_product = Item(name=name, price=price, description=description, amount=amount, user=user)
+        new_product.save()
+
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+```
+
+This function also accpets an HTTPrequest from the web browser and checks if it uses the `POST` method. If the condition is satisfied, it will get the fields `name`, `price`, `amount`, `description` from the request (according to the specified data in `models.py` and the web browser) using the AJAX `.get()` method and returns a `new_product` which is an instance of the `Item` object with the corresponding fields/attributes and request values. This will then return an `HttpResponse` and a `HttpResponseNotFound` otherwise.
+
+Both of these functions are then routed for their URL path in the `urlpatterns` list in `urls.py`:
+
+```py
+
+from main.views import get_product_json, add_product_ajax
+
+urlpatterns = [
+    ...
+    path('get-product/', get_product_json, name='get_product_json'),
+    path('create-product-ajax/', add_product_ajax, name='add_product_ajax'),
+    ...
+]
+
+
+```
+
+* __AJAX POST.__<br>
+
+To create a button that opens a modal with a form for adding an item, I first implemented the code for the table structure in `main.html` (and modified it according to the design in Assignment 5 using Tailwind CSS):
+
+```py
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table id="product_table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400"></table>
+</div>
+```
+
+Afterwards, I created a `<script>` tag block at the end of the file in order to use AJAX POST and asynchronous programming. The first function made was the `getProducts()` function that uses the `fetch()` API to return the products in JSON format from the data table in the web application:
+
+```py
+async function getProducts() {
+    return fetch("{% url 'main:get_product_json' %}").then((res) => res.json())
+        }
+``` 
+
+Then, I made another function called `refreshProducts()` that is used to refresh product data in the data table asynchronously. I also modified the function so that it utilizes Tailwind CSS for its design accordingly inside the `htmlString`, and also added the `amount` field so for the data table. Note that every last item in the data table was also made into a different color from the previous items using an `if` condition (by getting the last index of the `products` array):
+
+```py
+async function refreshProducts() {
+            document.getElementById("product_table").innerHTML = ""
+            const products = await getProducts()
+            let htmlString = `
+            <thead class="text-xs text-left text-sm text-gray-700 w-full uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Name</th>
+                    <th scope="col" class="px-6 py-3">Price</th>
+                    <th scope="col" class="px-6 py-3">Amount</th>
+                    <th scope="col" class="px-6 py-3">Description</th>
+                    <th scope="col" class="px-6 py-3">Date Added</th>
+                    <th scope="col" class="px-6 py-3">Modify Product</th>
+                </tr>
+            </thead>`
+            
+            products.forEach((item, index) => {
+                if (index == products.length-1) {
+                    htmlString += `\n
+                    <tbody>
+                            <tr class="font-bold dark:bg-yellow-300 text-gray-900">
+                            <td class="px-6 py-4">${item.fields.name}</td>
+                            <td class="px-6 py-4">${item.fields.price}</td>
+                            <td class="px-6 py-4">${item.fields.amount}</td>
+                            <td class="px-6 py-4">${item.fields.description}</td>
+                            <td class="px-6 py-4">${item.fields.product_release_date}</td>
+                            <td class="px-6 py-4">
+                                <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2" onclick="deleteProduct(${item.pk})">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>`
+                } else {
+                    htmlString += `\n
+                    <tbody>
+                            <tr class="font-bold dark:bg-gray-300 text-gray-900">
+                            <td class="px-6 py-4">${item.fields.name}</td>
+                            <td class="px-6 py-4">${item.fields.price}</td>
+                            <td class="px-6 py-4">${item.fields.amount}</td>
+                            <td class="px-6 py-4">${item.fields.description}</td>
+                            <td class="px-6 py-4">${item.fields.product_release_date}</td>
+                            <td class="px-6 py-4">
+                                <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2" onclick="deleteProduct(${item.pk})">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>`
+                } 
+                 
+                        })
+            
+            document.getElementById("product_table").innerHTML = htmlString
+        }
+    
+        refreshProducts()
+```
+
+
+Following this I contiued to create the Modal form to add the products that is customized by Tailwind CSS which was different from when we had to use Bootstrap for the previous modal form that was in the tutorial:
+
+```py
+<div class="relative flex min-h-screen flex-col pl-7 py-7 overflow-hidden dark:bg-gray-200">
+        
+        <!--modal trigger-->
+        <div>
+            <label for="tw-modal" class="curosr-pointer rounded bg-black px-4 py-4 text-white active:bg-slate-400">Add Product by Ajax</label>
+            <a href="{% url 'main:create_product' %}" class="px-3">
+                <button class="cursor-pointer dark:bg-yellow-400 text-white rounded-md ml-5 px-4 py-4 font-semibold">
+                    Add New Product
+                </button>
+            </a>
+        </div>
+        
+        <div class="pb-5 pt-10 relative">
+            <h5 class="font-bold">Last login session: {{ last_login }}</h5>
+        </div>
+        
+        <input type="checkbox" id="tw-modal" class="peer fixed appearance-none opacity-0"/>
+        
+        <!---modal-->
+        <label for="tw-modal" class="pointer-events-none invisible fixed inset-0 flex cursor-pointer items-center justify-center overflow-hidden overscroll-contain bg-slate-700/30 opacity-0 transition-all duration-200 ease-in-out peer-checked:pointer-events-auto peer-checked:visible peer-checked:opacity-100 peer-checked:[&>*]:translate-y-0 peer-checked0[&>*]:scale-100">
+            <!--modal box-->
+            <label class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-blue-400 dark:border-gray-700 h-fit max-w-lg scale-90 overflow-y-auto overscroll-contain shadow-2xl transition" for="">
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white pb-5 pt-5 pl-5">Add New Product</h1>
+                <form id="form" onsubmit="return false;" class="px-5">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Name:</label>
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="name" name="name"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Price:</label>
+                        <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="price" name="price"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Description:</label>
+                        <textarea class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="description" name="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Amount:</label>
+                        <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="amount" name="amount"></input>
+                    </div>
+                </form>
+                <div class="mt-7 ml-5 mb-5">
+                    <label for="tw-modal" type="button" class="cursor-pointer dark:bg-red-500 text-white rounded-md px-2 py-2 font-semibold transition-all duration-200 ease-in-out peer-checked:pointer-events-auto peer-checked:visible peer-checked:opacity-100 peer-checked:[&>*]:translate-y-0 peer-checked0[&>*]:scale-100">Close</label>
+                    <button type="button" class="cursor-pointer dark:bg-green-500 text-white rounded-md ml-3 px-2 py-2 font-semibold" id="button_add" for="tw-modal">Add Product</button>
+                </div>
+            </label>
+    </div>
+```
+
+The modal form here is activated by a button `Add Product by Ajax` (that is set in the same div as the `<table>` tag) and when the user clicks on it (this is an event-driven programming paradigm) which opens up the full-customized modal form. Note that the modal form has the fields listed according to the form in `models.py`. When the user clicks `Add Product` after filling out all the fields, the new product will be displayed in the data table in the web page. If no fields are entered/if the fields are incomplete, a new product will not be listed in the data table. Additionally, the modal form will close after adding the product when the user clicks the `Close` button or clicks on an area outside the modal form (which is an overlay made with Tailwind CSS).
+
+
+To add the products to the main web page it also requires a  new function in the JavaScript tag called `addProduct()`:
+
+```py
+function addProduct() {
+    fetch("{% url 'main:add_product_ajax' %}", {
+    method: "POST",
+    body: new FormData(document.querySelector('#form'))
+    }).then(refreshProducts)
+    
+    document.getElementById("form").reset()
+    return false
+}
+
+```
+
+This function uses the `fetch()` API that fethces the add product feature from the url `{% url 'main:add_product_ajax' %}` using the `POST` method in AJAX to create a new FormData taken from the modal form: `new FormData(document.querySelector('#form'))`. This code also wraps the data before sending it to the server, and then the modal form will be reset using `document.getElementById("form").reset()`. The `addProduct()` function is then set as the `onclick` function for the modal's `Add Product` button using `document.getElementById("button_add").onclick = addProduct` inside the `<script>` tag.
+
+Additional to this, I also created a delete feature for the data table in the main web page by creating the `deleteProduct` function inside the `<script>` tag and creating a `delete_product_ajax` in `views.py` which is then routed as a URL path in `urls.py`.
+
+1. In `views.py`:
+```py
+@csrf_exempt
+def delete_product_ajax(request, id):
+    product = Item.objects.get(pk=id)
+    product.delete()
+    return HttpResponse(b"DELETED", status=201)
+```
+
+2. In `urls.py`:
+
+```py
+
+from main.views import delete_product_ajax
+
+urlpatterns = [
+    ...
+    path('delete-product-ajax/<int:id>', delete_product_ajax, name='delete_product_ajax'),
+    ...
+]
+
+```
+
+3. In `main.html` inside the `<script>` tag:
+
+```py
+function deleteProduct(id) {
+    fetch("/delete-product-ajax/" + id, {
+    method: "POST"
+    }).then(refreshProducts)
+            
+    document.getElementById("form").reset()
+    return false
+        }
+```
+
+Note that the `deleteProduct()` function uses the `fetch()` API and the `POST` method, as well as receives the `id` of each item in the parameter (which is `item.pk` when you call the function). The function is implemented this way (as an attribute) in the `htmlString` for the table inside the `<button>` tag for delete:
+
+```py
+onclick="deleteProduct(${item.pk})"
+```
+
+Finally, the `collectstatic` command was ran on the terminal using the command `python manage.py collectstatic` which collects all static files from all the applications and places them in a folder called `static` in the root directory of the Django Project. Then, `/static/` was written in the `.gitignore` file so that the static folder could be ignored when deploying the web application.
