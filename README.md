@@ -924,6 +924,7 @@ function addProduct() {
     }).then(refreshProducts)
     
     document.getElementById("form").reset()
+    document.getElementById("tw-modal").close()
     return false
 }
 
@@ -966,7 +967,7 @@ function deleteProduct(id) {
             
     document.getElementById("form").reset()
     return false
-        }
+}
 ```
 
 Note that the `deleteProduct()` function uses the `fetch()` API and the `POST` method, as well as receives the `id` of each item in the parameter (which is `item.pk` when you call the function). The function is implemented this way (as an attribute) in the `htmlString` for the table inside the `<button>` tag for delete:

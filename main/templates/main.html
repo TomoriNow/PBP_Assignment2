@@ -55,7 +55,7 @@
                 </form>
                 <div class="mt-7 ml-5 mb-5">
                     <label for="tw-modal" type="button" class="cursor-pointer dark:bg-red-500 text-white rounded-md px-2 py-2 font-semibold transition-all duration-200 ease-in-out peer-checked:pointer-events-auto peer-checked:visible peer-checked:opacity-100 peer-checked:[&>*]:translate-y-0 peer-checked0[&>*]:scale-100">Close</label>
-                    <button type="button" class="cursor-pointer dark:bg-green-500 text-white rounded-md ml-3 px-2 py-2 font-semibold" id="button_add" for="tw-modal">Add Product</button>
+                    <label type="button" class="cursor-pointer dark:bg-green-500 text-white rounded-md ml-3 px-2 py-2 font-semibold" id="button_add" for="tw-modal">Add Product</label>
                 </div>
             </label>
     </div>
@@ -131,6 +131,7 @@
             }).then(refreshProducts)
     
             document.getElementById("form").reset()
+            document.getElementById("tw-modal").close()
             return false
         }
         
