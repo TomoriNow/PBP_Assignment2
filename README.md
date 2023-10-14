@@ -699,6 +699,8 @@ I customized the inventory list page using a table to represent the list of item
 
 # PBP_Inventory | Assignment 6
 
+The following link will redirect you to the Website: [Click Me!](https://muhammad-sean-tugas.pbp.cs.ui.ac.id)
+
 ## Explain the difference between asynchronous programming and synchronous programming.
 Asychnronous programming is a method of programming that utilizes non-blocking architechture so that the execution of a task does not depend on a another task in the program. This means that tasks can run simultaneously. Asynchronous programming has characterisitcs such as multi-thread (which means operations or programs can run in parallel), non-blocking (which means it has the ability to send multiple requests to a server), and also has the ability to increase the throughput of the program since it has multiple (parallel) operations that run at the same time. For example, in a client-server architechture asynchronus program can make a request to the server and continue working while waiting a response from the server which is more efficient.
 
