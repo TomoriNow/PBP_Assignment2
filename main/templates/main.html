@@ -15,7 +15,7 @@
         
         <!--modal trigger-->
         <div>
-            <label for="tw-modal" class="curosr-pointer rounded bg-black px-4 py-4 text-white active:bg-slate-400">Add Product by Ajax</label>
+            <label for="tw-modal" class="cursor-pointer rounded bg-black px-4 py-4 text-white active:bg-slate-400">Add Product by Ajax</label>
             <a href="{% url 'main:create_product' %}" class="px-3">
                 <button class="cursor-pointer dark:bg-yellow-400 text-white rounded-md ml-5 px-4 py-4 font-semibold">
                     Add New Product
@@ -52,6 +52,10 @@
                         <label for="amount" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Amount:</label>
                         <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="amount" name="amount"></input>
                     </div>
+                    <div class="mb-3">
+                        <label for="amount" class="block mb-2 text-l font-medium text-gray-900 dark:text-white">Rating:</label>
+                        <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" id="rating" name="rating"></input>
+                    </div>
                 </form>
                 <div class="mt-7 ml-5 mb-5">
                     <label for="tw-modal" type="button" class="cursor-pointer dark:bg-red-500 text-white rounded-md px-2 py-2 font-semibold transition-all duration-200 ease-in-out peer-checked:pointer-events-auto peer-checked:visible peer-checked:opacity-100 peer-checked:[&>*]:translate-y-0 peer-checked0[&>*]:scale-100">Close</label>
@@ -78,6 +82,7 @@
                     <th scope="col" class="px-6 py-3">Amount</th>
                     <th scope="col" class="px-6 py-3">Description</th>
                     <th scope="col" class="px-6 py-3">Date Added</th>
+                    <th scope="col" class="px-6 py-3">Rating</th>
                     <th scope="col" class="px-6 py-3">Modify Product</th>
                 </tr>
             </thead>`
@@ -92,6 +97,7 @@
                             <td class="px-6 py-4">${item.fields.amount}</td>
                             <td class="px-6 py-4">${item.fields.description}</td>
                             <td class="px-6 py-4">${item.fields.product_release_date}</td>
+                            <td class="px-6 py-4">${item.fields.rating}</td>
                             <td class="px-6 py-4">
                                 <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2" onclick="deleteProduct(${item.pk})">
                                     Delete
@@ -108,6 +114,7 @@
                             <td class="px-6 py-4">${item.fields.amount}</td>
                             <td class="px-6 py-4">${item.fields.description}</td>
                             <td class="px-6 py-4">${item.fields.product_release_date}</td>
+                            <td class="px-6 py-4">${item.fields.rating}</td>
                             <td class="px-6 py-4">
                                 <button class="cursor-pointer bg-red-500 text-white rounded-md px-2 py-2" onclick="deleteProduct(${item.pk})">
                                     Delete
