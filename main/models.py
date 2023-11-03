@@ -9,5 +9,5 @@ class Item(models.Model):
     description = models.TextField()
     product_release_date = models.DateField(auto_now_add=True)
     amount = models.IntegerField()
-    rating = models.IntegerField()
+    rating = models.IntegerField(default=0)
     
