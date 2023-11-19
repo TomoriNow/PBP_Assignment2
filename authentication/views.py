@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.models import User
 
 @csrf_exempt
 def login(request):
@@ -49,4 +50,39 @@ def logout(request):
         return JsonResponse({
         "status": False,
         "message": "Logout failed."
+        }, status=401)
+        
+@csrf_exempt
+def register(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    
+    # Check if the username is already taken
+    if User.objects.filter(username=username).exists():
+        return JsonResponse({
+            "status": False,
+            "message": "Username is already taken."
+        }, status=400)
+    
+    # Check if username and password are provided
+    if not username or not password:
+        return JsonResponse({
+            "status": False,
+            "message": "Username and password are required for registration."
+        }, status=400)
+
+    
+    
+    try:
+        user = User.objects.create_user(username=username, password=password)
+        user.save()
+        return JsonResponse({
+            "username": username,
+            "status": True,
+            "message": "Registered successfully!"
+        }, status=200)
+    except:
+        return JsonResponse({
+        "status": False,
+        "message": "Register failed, please try again."
         }, status=401)
