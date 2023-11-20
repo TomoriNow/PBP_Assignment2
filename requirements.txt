@@ -5,3 +5,8 @@ psycopg2-binary
 requests
 urllib3
 django-environ
+django-tailwind
+tailwind
+django-browser-reload
+django-widget-tweaks
+django-cors-headers
